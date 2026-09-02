@@ -429,6 +429,19 @@ footer{border-top:1px solid var(--linea);background:#fff;padding:28px 16px;color
 }
 @media print{.navsem,.botonera,.verres,.acciones,.mapa{display:none}.panel{display:block!important}}
 
+
+/* ── editor de ecuaciones ── */
+.barramat{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-bottom:11px;
+  background:linear-gradient(160deg,#f5f9fd,#eef5fb);border:1px solid #dbe7f2;padding:10px 12px;border-radius:9px}
+.barramat .et{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--gris2);
+  font-weight:800;margin-right:5px}
+.barramat button{border:1.5px solid var(--linea);background:#fff;border-radius:7px;padding:6px 11px;
+  font-size:13.5px;cursor:pointer;font-family:inherit;color:var(--azul);font-weight:600;transition:.15s}
+.barramat button:hover{border-color:var(--azul2);background:var(--azul3);transform:translateY(-1px)}
+.previa{margin-top:13px;border:1px solid var(--linea);border-radius:10px;background:#fbfdff;padding:13px 16px}
+.previa>b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--gris2);
+  font-weight:800;margin-bottom:8px}
+.previa .pvc{font-size:15.5px;line-height:1.75;color:var(--tinta);min-height:26px;overflow-x:auto}
 </style>
 </head>
 <body>
@@ -2004,7 +2017,7 @@ const QUICES = {
   ],
   /* B — parámetro / estadístico / vocabulario */
   [ r => { const mu=rstep(r,246,253,0.5), n=rint(r,30,60), xb=+(mu+rstep(r,-1.6,1.6,0.1)).toFixed(2);
-      return { q:`El área de calidad afirma: «el peso medio real de todas las piezas producidas este trimestre es \\(\\mu = 0 \\ \\text{g}\\). En la inspección de hoy se midieron ${n} piezas y se obtuvo \\(\\bar{x}\\) = ${f(xb,2)} g». Señale la afirmación correcta.`,
+      return { q:`El área de calidad afirma: «el peso medio real de todas las piezas producidas este trimestre es μ = ${f(mu,1)} g. En la inspección de hoy se midieron ${n} piezas y se obtuvo \\(\\bar{x}\\) = ${f(xb,2)} g». Señale la afirmación correcta.`,
         ...mc(r,'μ = '+f(mu,1)+' g es un parámetro y \\(\\bar{x}\\) = '+f(xb,2)+' g es un estadístico',
           ['Ambos son parámetros, porque los dos describen el peso de las piezas',
            'μ = '+f(mu,1)+' g es un estadístico y \\(\\bar{x}\\) = '+f(xb,2)+' g es un parámetro',
@@ -2029,22 +2042,22 @@ const QUICES = {
   [ r => { const mu=rstep(r,40,48,0.5), sg=rstep(r,7.5,11,0.5), n=pick(r,[36,49,64,100]),
         a=+(mu+rstep(r,1.5,4,0.5)).toFixed(1);
       const se=sg/Math.sqrt(n), z=(a-mu)/se, p=1-pnorm(z);
-      return { q:`El tiempo de ciclo de una máquina tiene media \\(\\mu = 0 s\\) y desviación estándar \\(\\sigma = 1 s\\). La distribución es <b>asimétrica a la derecha</b>. Se toma una muestra aleatoria de \\(\\mathbf{n = 2 }\\) ciclos. Calcule P(\\(\\bar{x}\\) > ${f(a,1)} s).`,
+      return { q:`El tiempo de ciclo de una máquina tiene media μ = ${f(mu,1)} s y desviación estándar σ = ${f(sg,1)} s. La distribución es <b>asimétrica a la derecha</b>. Se toma una muestra aleatoria de <b>n = ${n}</b> ciclos. Calcule P(\\(\\bar{x}\\) > ${f(a,1)} s).`,
         ...mc(r, f(p,4), [f(1-pnorm((a-mu)/sg),4), f(pnorm(z),4), f(2*(1-pnorm(Math.abs(z))),4)]),
-        sust:true, ayuda:'\\(\\sigma_{\\bar{x}}\\) = σ/√n. El TCL aplica porque n ≥ 30, aunque la población sea asimétrica.' };
+        sust:true, ayuda:'$$\\sigma_{\\bar{X}}=\\frac{\\sigma}{\\sqrt{n}}$$ El Teorema Central del Límite aplica porque \\(n\\ge 30\\), aunque la población sea asimétrica.' };
     },
     r => { const mu=rstep(r,240,258,1), sg=rstep(r,2.8,4.2,0.1), n=pick(r,[16,25,36,49]),
         d=rstep(r,0.8,1.8,0.1);
       const se=sg/Math.sqrt(n), z=d/se, p=2*(1-pnorm(z));
-      return { q:`El peso neto de una pieza es <b>normal</b> con \\(\\mu = 0 \\ \\text{g}\\) y \\(\\sigma = 1 \\ \\text{g}\\). Se toma una muestra de \\(\\mathbf{n = 2 }\\) piezas. ¿Cuál es la probabilidad de que la media muestral se aleje del objetivo en más de ${f(d,1)} g, en cualquier dirección?`,
+      return { q:`El peso neto de una pieza es <b>normal</b> con μ = ${fm(mu)} g y σ = ${f(sg,1)} g. Se toma una muestra de <b>n = ${n}</b> piezas. ¿Cuál es la probabilidad de que la media muestral se aleje del objetivo en más de ${f(d,1)} g, en cualquier dirección?`,
         ...mc(r, f(p,4), [f(1-pnorm(z),4), f(pnorm(z),4), f(2*(1-pnorm(d/sg)),4)]),
-        sust:true, ayuda:'Se pide P(|\\(\\bar{x}\\) − μ| > d) = 2·P(Z > d/(σ/√n)).' };
+        sust:true, ayuda:'Se pide $$P\\left(\\left|\\bar{X}-\\mu\\right|>d\\right)=2\\,P\\!\\left(Z>\\frac{d}{\\sigma/\\sqrt{n}}\\right)$$' };
     },
     r => { const p=rstep(r,0.07,0.16,0.005), n=pick(r,[120,150,180,200]), a=+(p+rstep(r,0.02,0.05,0.005)).toFixed(3);
       const se=Math.sqrt(p*(1-p)/n), z=(a-p)/se, pr=1-pnorm(z);
-      return { q:`La proporción histórica de piezas defectuosas de una línea es \\(p = 0\\). Se inspeccionan \\(\\mathbf{n = 1 }\\) piezas tomadas al azar. Calcule la probabilidad de que la proporción muestral de defectuosas supere ${f(a,3)}.`,
+      return { q:`La proporción histórica de piezas defectuosas de una línea es p = ${f(p,3)}. Se inspeccionan <b>n = ${n}</b> piezas tomadas al azar. Calcule la probabilidad de que la proporción muestral de defectuosas supere ${f(a,3)}.`,
         ...mc(r, f(pr,4), [f(pnorm(z),4), f(1-pnorm((a-p)/Math.sqrt(p*(1-p))),4), f(2*(1-pnorm(z)),4)]),
-        sust:true, ayuda:'\\(\\sigma_{\\hat{p}}\\;= \\sqrt{p(1-p)/n}\\). Verifique antes que np ≥ 5 y n(1−p) ≥ 5.' };
+        sust:true, ayuda:'$$\\sigma_{\\hat{p}}=\\sqrt{\\frac{p(1-p)}{n}}$$ Verifique antes que \\(np\\ge 5\\) y \\(n(1-p)\\ge 5\\).' };
     }
   ]
  ]},
@@ -2058,32 +2071,32 @@ const QUICES = {
       const z=(a-mu)/sg, p=pnorm(z);
       return { q:`La temperatura del molde de una inyectora es <b>N(${f(mu,1)} °C, ${f(sg,1)} °C)</b>. ¿Qué proporción de los ciclos opera por debajo de ${f(a,1)} °C?`,
         ...mc(r, f(p,4), [f(1-p,4), f(pnorm((mu-a)/sg),4), f(2*p,4)]),
-        sust:true, ayuda:'z = (x − μ)/σ y se lee Φ(z) en la tabla.' };
+        sust:true, ayuda:'$$z=\\frac{x-\\mu}{\\sigma}$$ y se lee \\(\\Phi(z)\\) en la tabla acumulada.' };
     },
     r => { const mu=rstep(r,860,900,5), sg=rstep(r,38,48,1), a=+(mu-rstep(r,25,60,5)).toFixed(0), b=+(mu+rstep(r,25,60,5)).toFixed(0);
       const p=pnorm((b-mu)/sg)-pnorm((a-mu)/sg);
       return { q:`La presión de inyección es <b>N(${fm(mu)} bar, ${fm(sg)} bar)</b>. Calcule la proporción de ciclos que operan entre ${fm(a)} y ${fm(b)} bar.`,
         ...mc(r, f(p,4), [f(pnorm((b-mu)/sg),4), f(1-p,4), f(pnorm((a-mu)/sg),4)]),
-        sust:true, ayuda:'P(a < X < b) = Φ(z_b) − Φ(z_a).' };
+        sust:true, ayuda:'$$P(a<X<b)=\\Phi(z_b)-\\Phi(z_a)$$' };
     },
     r => { const mu=rstep(r,11,14,0.5), sg=rstep(r,4.2,5.4,0.2), a=+(mu+rstep(r,4,9,0.5)).toFixed(1);
       const p=1-pnorm((a-mu)/sg);
       return { q:`El tiempo de picking por orden en un centro de distribución es <b>N(${f(mu,1)} min, ${f(sg,1)} min)</b>. El estándar interno considera «orden demorada» toda la que supera ${f(a,1)} minutos. ¿Qué porcentaje de órdenes se clasifica como demorada?`,
         ...mc(r, f(100*p,2)+' %', [f(100*(1-p),2)+' %', f(100*pnorm((a-mu)/sg),2)+' %', f(200*p,2)+' %']),
-        sust:true, ayuda:'\\(P(X \\gt a) = 1 -\\) Φ(z_a). Convierta la proporción a porcentaje.' };
+        sust:true, ayuda:'$$P(X>a)=1-\\Phi(z_a)$$ Convierta después la proporción a porcentaje.' };
     }
   ],
   [ r => { const mu=rstep(r,240,258,1), sg=rstep(r,2.8,4.2,0.1), pc=pick(r,[0.05,0.10,0.90,0.95]);
       const z=qnorm(pc), x=mu+z*sg;
       return { q:`El peso neto de la pieza es <b>N(${fm(mu)} g, ${f(sg,1)} g)</b>. Determine el valor del peso que deja por debajo de sí al <b>${f(100*pc,0)} %</b> de la producción.`,
         ...mc(r, f(x,2)+' g', [f(mu-z*sg,2)+' g', f(mu+z,2)+' g', f(mu+z*sg*Math.sqrt(30),2)+' g']),
-        sust:true, ayuda:'Se busca el z que deja el área pedida a la izquierda y luego x = μ + z·σ.' };
+        sust:true, ayuda:'Se busca el \\(z\\) que deja el área pedida a la izquierda y luego $$x=\\mu+z\\,\\sigma$$' };
     },
     r => { const mu=rstep(r,40,48,0.5), sg=rstep(r,7.5,11,0.5), pc=pick(r,[0.05,0.10,0.15,0.20]);
       const z=qnorm(1-pc), x=mu+z*sg;
       return { q:`El tiempo de ciclo es <b>N(${f(mu,1)} s, ${f(sg,1)} s)</b>. La jefatura quiere fijar un tiempo estándar que sea superado solamente por el <b>${f(100*pc,0)} %</b> de los ciclos. ¿Cuál es ese tiempo?`,
         ...mc(r, f(x,2)+' s', [f(mu-z*sg,2)+' s', f(mu+qnorm(pc)*sg,2)+' s', f(mu+z*sg/Math.sqrt(30),2)+' s']),
-        sust:true, ayuda:'Si el área a la derecha es p, el área a la izquierda es 1 − p. Ahí se lee el z.' };
+        sust:true, ayuda:'Si el área a la derecha es \\(p\\), el área a la izquierda es \\(1-p\\). Ahí se lee el \\(z\\).' };
     },
     r => { const mu=rstep(r,59.6,60.4,0.1), sg=rstep(r,0.36,0.48,0.02), conf=pick(r,[0.90,0.95,0.98,0.99]);
       const z=qnorm(1-(1-conf)/2), li=mu-z*sg, ls=mu+z*sg;
@@ -2092,7 +2105,7 @@ const QUICES = {
           ['('+f(mu-z*sg/Math.sqrt(25),3)+' ; '+f(mu+z*sg/Math.sqrt(25),3)+') mm',
            '('+f(mu-z,3)+' ; '+f(mu+z,3)+') mm',
            '('+f(mu-qnorm(conf)*sg,3)+' ; '+f(mu+qnorm(conf)*sg,3)+') mm']),
-        sust:true, ayuda:'El área central deja (1−conf)/2 en cada cola. Use z_{α/2}.' };
+        sust:true, ayuda:'El área central deja \\(\\dfrac{1-\\text{confianza}}{2}\\) en cada cola, así que se usa \\(z_{\\alpha/2}\\).' };
     }
   ],
   [ r => { return { q:`Una variable de proceso tiene distribución normal. Señale la afirmación <b>correcta</b> sobre el puntaje z.`,
@@ -2106,14 +2119,14 @@ const QUICES = {
       const centro=(lie+lse)/2, corr=pick(r,[-1,1])*rstep(r,1.2,2.6,0.2);
       const mu=+(centro+corr).toFixed(1);
       const cp=(lse-lie)/(6*sg), cpk=Math.min((lse-mu)/(3*sg),(mu-lie)/(3*sg));
-      return { q:`Para el peso neto, la especificación es \\(\\mathrm{LIE} = 0 \\ \\text{g}\\) y \\(\\mathrm{LSE} = 1 \\ \\text{g}\\). El proceso tiene \\(\\mu = 2 \\ \\text{g}\\) y \\(\\sigma = 3 \\ \\text{g}\\). Calcule \\(C_p\\) y \\(C_{pk}\\).`,
+      return { q:`Para el peso neto, la especificación es LIE = ${lie} g y LSE = ${lse} g. El proceso tiene μ = ${f(mu,1)} g y σ = ${f(sg,1)} g. Calcule \\(C_p\\) y \\(C_{pk}\\).`,
         ...mc(r,'\\(C_p\\) = '+f(cp,3)+' y \\(C_{pk}\\) = '+f(cpk,3),
           ['\\(C_p\\) = '+f(cpk,3)+' y \\(C_{pk}\\) = '+f(cp,3),
            '\\(C_p\\) = '+f((lse-lie)/(3*sg),3)+' y \\(C_{pk}\\) = '+f(cpk,3),
            '\\(C_p\\) = '+f(cp,3)+' y \\(C_{pk}\\) = '+f(Math.max((lse-mu)/(3*sg),(mu-lie)/(3*sg)),3)]),
-        sust:true, ayuda:'C_p \\(= \\dfrac{\\mathrm{LSE} - \\mathrm{LIE}}{6\\sigma }\\); C_pk toma el mínimo de las dos distancias divididas entre 3σ.' };
+        sust:true, ayuda:'$$C_p=\\frac{LSE-LIE}{6\\sigma}\\qquad C_{pk}=\\min\\left\\{\\frac{LSE-\\mu}{3\\sigma},\\;\\frac{\\mu-LIE}{3\\sigma}\\right\\}$$' };
     },
-    r => { return { q:`Un proceso presenta \\(C_p\\;= 1.42\\) y \\(C_{pk}\\;= 0.71\\). ¿Qué se concluye y cuál es la acción prioritaria?`,
+    r => { return { q:`Un proceso presenta \\(C_p\\) = 1.42 y \\(C_{pk}\\) = 0.71. ¿Qué se concluye y cuál es la acción prioritaria?`,
         ...mc(r,'La variabilidad es suficientemente pequeña para la especificación, pero el proceso está descentrado; la acción prioritaria es recentrar la media',
           ['La variabilidad es demasiado alta; la acción prioritaria es reducir σ',
            'El proceso es incapaz en todo sentido y debe reemplazarse la máquina',
@@ -2145,7 +2158,7 @@ const QUICES = {
            'El logaritmo garantiza que el estimador sea consistente']),
         sust:false };
     },
-    r => { return { q:`Se aplica el método de los momentos a una distribución con \\(E(X) = 3\\theta\\). En una muestra de tamaño n se obtiene una media \\(\\bar{x}\\). ¿Cuál es el estimador de θ por momentos?`,
+    r => { return { q:`Se aplica el método de los momentos a una distribución con E(X) = 3θ. En una muestra de tamaño n se obtiene una media \\(\\bar{x}\\). ¿Cuál es el estimador de θ por momentos?`,
         ...mc(r,'\\(\\hat{\\theta} = \\bar{x}\\)/3', ['\\(\\hat{\\theta}\\) = 3\\(\\bar{x}\\)','\\(\\hat{\\theta} = \\bar{x}\\)','\\(\\hat{\\theta}\\) = 3/\\(\\bar{x}\\)']),
         sust:false };
     }
@@ -2160,29 +2173,29 @@ const QUICES = {
           ['\\(\\hat{\\sigma}^2_{\\mathrm{MV}}\\) = '+f(s2,4)+' y \\(s^2\\) = '+f(emv,4),
            '\\(\\hat{\\sigma}^2_{\\mathrm{MV}}\\) = '+f(sc,4)+' y \\(s^2\\) = '+f(emv,4),
            '\\(\\hat{\\sigma}^2_{\\mathrm{MV}}\\) = '+f(Math.sqrt(emv),4)+' y \\(s^2\\) = '+f(Math.sqrt(s2),4)]),
-        sust:true, ayuda:'El EMV divide entre n; el estimador insesgado divide entre n − 1.' };
+        sust:true, ayuda:'El estimador de máxima verosimilitud divide entre \\(n\\); el estimador insesgado divide entre \\(n-1\\).' };
     },
     r => { const n=rint(r,6,9); const datos=[];
       for(let i=0;i<n;i++) datos.push(rint(r,2,7));
       const s=datos.reduce((a,b)=>a+b,0), xb=s/n;
       return { q:`El número de paradas no programadas por jornada se modela como <b>Poisson(λ)</b>. En <b>${n}</b> jornadas se observaron: <b>${datos.join(', ')}</b>. Calcule la estimación de máxima verosimilitud de λ.`,
         ...mc(r, f(xb,4), [f(1/xb,4), f(s,4), f(Math.sqrt(xb),4)]),
-        sust:true, ayuda:'Para Poisson, el EMV de λ es la media muestral.' };
+        sust:true, ayuda:'Para la distribución de Poisson, el estimador de máxima verosimilitud de \\(\\lambda\\) es la media muestral: \\(\\hat{\\lambda}=\\bar{x}\\).' };
     },
     r => { const n=rint(r,5,7); const datos=[];
       for(let i=0;i<n;i++) datos.push(+rstep(r,1.5,14,0.1).toFixed(1));
       const s=datos.reduce((a,b)=>a+b,0), xb=s/n, lam=1/xb;
       return { q:`Los tiempos entre fallas de un montacargas (en horas) se modelan como <b>Exponencial(λ)</b>. Se observaron <b>${n}</b> tiempos: <b>${datos.map(d=>f(d,1)).join(', ')}</b>. Calcule la estimación de máxima verosimilitud de λ, en fallas por hora.`,
         ...mc(r, f(lam,4), [f(xb,4), f(s,4), f(n/s*n,4)]),
-        sust:true, ayuda:'Para la exponencial, \\(\\hat{λ} = n/\\sum x = 1/\\;\\bar{x}\\).' };
+        sust:true, ayuda:'Para la exponencial, $$\\hat{\\lambda}=\\frac{n}{\\sum x_i}=\\frac{1}{\\bar{x}}$$' };
     }
   ],
-  [ r => { return { q:`Dos estimadores insesgados de μ se comparan: \\(\\hat{\\theta}_1 = \\bar{x}\\) con \\(n = 16\\) observaciones, y \\(\\hat{\\theta}_2\\;= \\dfrac{X_{1} + X_{16}}{2}\\), que usa solo la primera y la última. ¿Cuál es más eficiente y en qué proporción?`,
+  [ r => { return { q:`Dos estimadores insesgados de μ se comparan: \\(\\hat{\\theta}_1 = \\bar{x}\\) con n = 16 observaciones, y \\(\\hat{\\theta}_2\\) = (X₁ + X₁₆)/2, que usa solo la primera y la última. ¿Cuál es más eficiente y en qué proporción?`,
         ...mc(r,'\\(\\hat{\\theta}_1\\), con una eficiencia relativa de 8: Var(\\(\\hat{\\theta}_1\\)) = \\(\\sigma^2\\)/16 frente a Var(\\(\\hat{\\theta}_2\\)) = \\(\\sigma^2\\)/2',
           ['\\(\\hat{\\theta}_2\\), porque usa los valores extremos y captura mejor el rango',
            '\\(\\hat{\\theta}_1\\), con una eficiencia relativa de 16, porque usa las 16 observaciones',
            'Son igualmente eficientes, porque ambos son insesgados']),
-        sust:true, ayuda:'Var(\\(\\bar{x}\\)) = \\(\\sigma^2\\;/n; Var(\\dfrac{X_{1}+X_{16}}{2}) =\\;\\sigma^2\\)/4 + \\(\\sigma^2\\)/4. La eficiencia relativa es el cociente de varianzas.' };
+        sust:true, ayuda:'$$\\operatorname{Var}(\\bar{X})=\\frac{\\sigma^{2}}{n}\\qquad \\operatorname{Var}\\!\\left(\\frac{X_1+X_{16}}{2}\\right)=\\frac{\\sigma^{2}}{4}+\\frac{\\sigma^{2}}{4}$$ La eficiencia relativa es el cociente de las dos varianzas.' };
     },
     r => { return { q:`Un estimador \\(\\hat{\\theta}\\) cumple E(\\(\\hat{\\theta}\\)) = θ pero Var(\\(\\hat{\\theta}\\)) no disminuye cuando n crece. ¿Cómo se clasifica?`,
         ...mc(r,'Es insesgado pero no consistente',
@@ -2231,30 +2244,30 @@ const QUICES = {
   ],
   [ r => { const n=pick(r,[36,49,64,100]), xb=rstep(r,11,14,0.05), s=rstep(r,4.2,5.4,0.05), conf=pick(r,[0.90,0.95,0.99]);
       const z=qnorm(1-(1-conf)/2), e=z*s/Math.sqrt(n);
-      return { q:`Una muestra de <b>${n}</b> órdenes de picking arroja \\(\\bar{x}\\;= 1 \\ \\text{min}\\) y \\(s = 2 \\ \\text{min}\\). Construya el intervalo de confianza del <b>${f(100*conf,0)} %</b> para el tiempo medio de picking (use Z, ya que n ≥ 30).`,
+      return { q:`Una muestra de <b>${n}</b> órdenes de picking arroja \\(\\bar{x}\\) = ${f(xb,2)} min y s = ${f(s,2)} min. Construya el intervalo de confianza del <b>${f(100*conf,0)} %</b> para el tiempo medio de picking (use Z, ya que n ≥ 30).`,
         ...mc(r,'('+f(xb-e,3)+' ; '+f(xb+e,3)+') min',
           ['('+f(xb-z*s,3)+' ; '+f(xb+z*s,3)+') min',
            '('+f(xb-e/Math.sqrt(n),3)+' ; '+f(xb+e/Math.sqrt(n),3)+') min',
            '('+f(xb-qnorm(conf)*s/Math.sqrt(n),3)+' ; '+f(xb+qnorm(conf)*s/Math.sqrt(n),3)+') min']),
-        sust:true, ayuda:'\\(\\bar{x}\\) ± z_{α/2}·s/√n. Cuidado: α/2 en cada cola.' };
+        sust:true, ayuda:'$$\\bar{x}\\;\\pm\\;z_{\\alpha/2}\\,\\frac{s}{\\sqrt{n}}$$ Cuidado: el área \\(\\alpha/2\\) va en cada cola.' };
     },
     r => { const n=pick(r,[10,12,15,20,25]), xb=rstep(r,940,1010,1), s=rstep(r,95,135,1), conf=pick(r,[0.95,0.99]);
       const t=qt(1-(1-conf)/2,n-1), e=t*s/Math.sqrt(n);
-      return { q:`Una muestra de <b>${n}</b> jornadas de una planta textil arroja un consumo medio de ${fm(xb)} kWh con \\(s = 2 \\ \\text{kWh}\\). Suponiendo normalidad, construya el intervalo de confianza del <b>${f(100*conf,0)} %</b> para el consumo medio. (\\(t_{${f((1-conf)/2,3)},\\,${n-1}}\\) = ${f(t,3)})`,
+      return { q:`Una muestra de <b>${n}</b> jornadas de una planta textil arroja un consumo medio de ${fm(xb)} kWh con s = ${fm(s)} kWh. Suponiendo normalidad, construya el intervalo de confianza del <b>${f(100*conf,0)} %</b> para el consumo medio. (\\(t_{${f((1-conf)/2,3)},\\,${n-1}}\\) = ${f(t,3)})`,
         ...mc(r,'('+f(xb-e,2)+' ; '+f(xb+e,2)+') kWh',
           ['('+f(xb-t*s,2)+' ; '+f(xb+t*s,2)+') kWh',
            '('+f(xb-qnorm(1-(1-conf)/2)*s/Math.sqrt(n),2)+' ; '+f(xb+qnorm(1-(1-conf)/2)*s/Math.sqrt(n),2)+') kWh',
            '('+f(xb-e*Math.sqrt(n),2)+' ; '+f(xb+e*Math.sqrt(n),2)+') kWh']),
-        sust:true, ayuda:'\\(\\bar{x}\\) ± t_{α/2, n−1}·s/√n, con n − 1 grados de libertad.' };
+        sust:true, ayuda:'$$\\bar{x}\\;\\pm\\;t_{\\alpha/2,\\;n-1}\\,\\frac{s}{\\sqrt{n}}$$ con \\(n-1\\) grados de libertad.' };
     },
     r => { const s=rstep(r,4.2,5.4,0.05), E=pick(r,[0.25,0.30,0.40,0.50]), conf=pick(r,[0.95,0.99]);
       const z=qnorm(1-(1-conf)/2), n=Math.ceil(Math.pow(z*s/E,2));
-      return { q:`Un estudio piloto estima \\(s = 0 \\ \\text{min}\\) para el tiempo de picking. ¿Cuántas órdenes deben cronometrarse para estimar el tiempo medio con un margen de error máximo de <b>${f(E,2)} min</b> y un <b>${f(100*conf,0)} %</b> de confianza?`,
+      return { q:`Un estudio piloto estima s = ${f(s,2)} min para el tiempo de picking. ¿Cuántas órdenes deben cronometrarse para estimar el tiempo medio con un margen de error máximo de <b>${f(E,2)} min</b> y un <b>${f(100*conf,0)} %</b> de confianza?`,
         ...mc(r, fm(n)+' órdenes',
           [fm(Math.ceil(Math.pow(z*s/E,2)/2))+' órdenes',
            fm(Math.ceil(z*s/E))+' órdenes',
            fm(Math.ceil(Math.pow(qnorm(conf)*s/E,2)))+' órdenes']),
-        sust:true, ayuda:'n = (z_{α/2}·s / E)², y siempre se redondea hacia arriba.' };
+        sust:true, ayuda:'$$n=\\left(\\frac{z_{\\alpha/2}\\,s}{E}\\right)^{2}$$ y el resultado siempre se redondea hacia arriba.' };
     }
   ],
   [ r => { const li=rstep(r,11.5,12.2,0.05), ls=+(li+rstep(r,0.6,1.4,0.05)).toFixed(2);
@@ -2273,7 +2286,7 @@ const QUICES = {
         sust:false };
     },
     r => { const s=rstep(r,4.2,5.4,0.05);
-      return { q:`Un intervalo del 95 % para el tiempo medio de picking resultó ser (12.24 ; 12.54) min, con \\(s = 0 \\ \\text{min}\\). Un supervisor concluye que casi todas las órdenes tardan entre 12.24 y 12.54 minutos. ¿Cuál es el error?`,
+      return { q:`Un intervalo del 95 % para el tiempo medio de picking resultó ser (12.24 ; 12.54) min, con s = ${f(s,2)} min. Un supervisor concluye que casi todas las órdenes tardan entre 12.24 y 12.54 minutos. ¿Cuál es el error?`,
         ...mc(r,'Confunde el intervalo para la media con el rango de las observaciones individuales; con s = '+f(s,2)+' min, las órdenes individuales se dispersan mucho más',
           ['El error es haber usado 95 % en lugar de 99 % de confianza',
            'El error es que el intervalo debió construirse con la distribución t',
@@ -2295,7 +2308,7 @@ const QUICES = {
           ['('+f(ph-z*Math.sqrt(ph*(1-ph)),4)+' ; '+f(ph+z*Math.sqrt(ph*(1-ph)),4)+')',
            '('+f(ph-e/Math.sqrt(n),4)+' ; '+f(ph+e/Math.sqrt(n),4)+')',
            '('+f(ph-qnorm(conf)*Math.sqrt(ph*(1-ph)/n),4)+' ; '+f(ph+qnorm(conf)*Math.sqrt(ph*(1-ph)/n),4)+')']),
-        sust:true, ayuda:'\\(\\hat{p}\\) ± z_{α/2}·√(\\(\\hat{p}\\)(1−\\(\\hat{p}\\))/n). Verifique antes que n\\(\\hat{p}\\) ≥ 5 y n(1−\\(\\hat{p}\\)) ≥ 5.' };
+        sust:true, ayuda:'$$\\hat{p}\\;\\pm\\;z_{\\alpha/2}\\sqrt{\\frac{\\hat{p}\\,(1-\\hat{p})}{n}}$$ Verifique antes que \\(n\\hat{p}\\ge 5\\) y \\(n(1-\\hat{p})\\ge 5\\).' };
     },
     r => { const n=pick(r,[300,450,600]), pp=rstep(r,0.75,0.90,0.005), conf=pick(r,[0.95,0.99]);
       const x=Math.round(n*pp), ph=x/n, z=qnorm(1-(1-conf)/2), e=z*Math.sqrt(ph*(1-ph)/n);
@@ -2304,7 +2317,7 @@ const QUICES = {
           ['('+f(100*(ph-e/Math.sqrt(n)),2)+' % ; '+f(100*(ph+e/Math.sqrt(n)),2)+' %)',
            '('+f(100*(ph-z*ph*(1-ph)/n),2)+' % ; '+f(100*(ph+z*ph*(1-ph)/n),2)+' %)',
            '('+f(100*ph,2)+' % ; '+f(100*(ph+2*e),2)+' %)']),
-        sust:true, ayuda:'Construya el intervalo en proporción y multiplique ambos límites por 100.' };
+        sust:true, ayuda:'Construya el intervalo en proporción y multiplique después ambos límites por 100.' };
     },
     r => { const E=pick(r,[0.02,0.025,0.03,0.04]), conf=pick(r,[0.95,0.99]);
       const z=qnorm(1-(1-conf)/2), n0=Math.ceil(z*z/(4*E*E));
@@ -2313,28 +2326,28 @@ const QUICES = {
           [fm(Math.ceil(z*z*0.5/(E*E)))+' piezas',
            fm(Math.ceil(z*z/(E*E)))+' piezas',
            fm(Math.ceil(z/(2*E)))+' piezas']),
-        sust:true, ayuda:'Sin información previa se usa \\(p = 0.5\\), que maximiza \\(p(1-p) = 0.25\\). Entonces \\(n = z^{2}/(4E^{2})\\).' };
+        sust:true, ayuda:'Sin información previa se usa \\(p=0{,}5\\), que maximiza \\(p(1-p)=0{,}25\\). Entonces $$n=\\frac{z_{\\alpha/2}^{2}}{4E^{2}}$$' };
     }
   ],
   [ r => { const n=pick(r,[16,20,25]), s=rstep(r,3.8,5.6,0.05), conf=0.95;
       const a=qchisq(1-(1-conf)/2,n-1), b=qchisq((1-conf)/2,n-1);
       const li=(n-1)*s*s/a, ls=(n-1)*s*s/b;
-      return { q:`Una muestra de <b>${n}</b> órdenes arroja \\(s = 1 \\ \\text{min}\\). Suponiendo normalidad, construya el intervalo del 95 % para <b>\\(\\sigma^2\\)</b>. Use \\(\\chi^2_{0.025,\\,${n-1}}\\) = ${f(a,3)} y \\(\\chi^2_{0.975,\\,${n-1}}\\) = ${f(b,3)}.`,
+      return { q:`Una muestra de <b>${n}</b> órdenes arroja s = ${f(s,2)} min. Suponiendo normalidad, construya el intervalo del 95 % para <b>\\(\\sigma^2\\)</b>. Use \\(\\chi^2_{0.025,\\,${n-1}}\\) = ${f(a,3)} y \\(\\chi^2_{0.975,\\,${n-1}}\\) = ${f(b,3)}.`,
         ...mc(r,'('+f(li,3)+' ; '+f(ls,3)+') min²',
           ['('+f(ls,3)+' ; '+f(li,3)+') min²',
            '('+f(Math.sqrt(li),3)+' ; '+f(Math.sqrt(ls),3)+') min²',
            '('+f(n*s*s/a,3)+' ; '+f(n*s*s/b,3)+') min²']),
-        sust:true, ayuda:'((n−1)\\(s^2/\\chi^2\\)_{α/2} ; (n−1)\\(s^2/\\chi^2\\)_{1−α/2}). El \\(\\chi^2\\) grande va en el límite inferior.' };
+        sust:true, ayuda:'$$\\left(\\frac{(n-1)s^{2}}{\\chi^{2}_{\\alpha/2}}\\;;\\;\\frac{(n-1)s^{2}}{\\chi^{2}_{1-\\alpha/2}}\\right)$$ El \\(\\chi^{2}\\) grande va en el denominador del límite inferior.' };
     },
     r => { const n=pick(r,[16,20,25,30]), s=rstep(r,3.8,5.6,0.05);
       const a=qchisq(0.975,n-1), b=qchisq(0.025,n-1);
       const li=Math.sqrt((n-1)*s*s/a), ls=Math.sqrt((n-1)*s*s/b);
-      return { q:`Con una muestra de <b>${n}</b> mediciones y \\(s = 1 \\ \\text{min}\\), construya el intervalo del 95 % para la <b>desviación estándar σ</b>. Use \\(\\chi^2_{0.025,\\,${n-1}}\\) = ${f(a,3)} y \\(\\chi^2_{0.975,\\,${n-1}}\\) = ${f(b,3)}.`,
+      return { q:`Con una muestra de <b>${n}</b> mediciones y s = ${f(s,2)} min, construya el intervalo del 95 % para la <b>desviación estándar σ</b>. Use \\(\\chi^2_{0.025,\\,${n-1}}\\) = ${f(a,3)} y \\(\\chi^2_{0.975,\\,${n-1}}\\) = ${f(b,3)}.`,
         ...mc(r,'('+f(li,3)+' ; '+f(ls,3)+') min',
           ['('+f(li*li,3)+' ; '+f(ls*ls,3)+') min',
            '('+f(ls,3)+' ; '+f(li,3)+') min',
            '('+f(s-1.96*s/Math.sqrt(2*n),3)+' ; '+f(s+1.96*s/Math.sqrt(2*n),3)+') min']),
-        sust:true, ayuda:'Construya primero el intervalo para \\(\\sigma^2\\) y luego tome la raíz cuadrada de ambos extremos.' };
+        sust:true, ayuda:'Construya primero el intervalo para \\(\\sigma^{2}\\) y luego tome la raíz cuadrada de ambos extremos.' };
     },
     r => { return { q:`¿Por qué el intervalo de confianza para \\(\\sigma^2\\) <b>no</b> es simétrico alrededor de \\(s^2\\), a diferencia del intervalo para μ que sí es simétrico alrededor de \\(\\bar{x}\\)?`,
         ...mc(r,'Porque la distribución \\(\\chi^2\\) es asimétrica a la derecha, de modo que los dos valores críticos no son equidistantes del centro',
@@ -2344,7 +2357,7 @@ const QUICES = {
         sust:false };
     }
   ],
-  [ r => { return { q:`Un analista construye un intervalo de confianza para \\(\\sigma^2\\) del tiempo de ciclo usando \\(n = 3\\,500\\) datos, y justifica que no importa la fuerte asimetría de la variable porque el tamaño de muestra es grande. ¿Es válido su argumento?`,
+  [ r => { return { q:`Un analista construye un intervalo de confianza para \\(\\sigma^2\\) del tiempo de ciclo usando n = 3 500 datos, y justifica que no importa la fuerte asimetría de la variable porque el tamaño de muestra es grande. ¿Es válido su argumento?`,
         ...mc(r,'No. El Teorema Central del Límite protege al intervalo para la media, pero el estadístico (n−1)\\(s^2/\\sigma^2\\) requiere normalidad de la población, y ese requisito no desaparece al aumentar n',
           ['Sí, con n ≥ 30 todos los intervalos son válidos por el Teorema Central del Límite',
            'Sí, siempre que use la distribución t en lugar de la \\(\\chi^2\\)',
@@ -2367,7 +2380,7 @@ const QUICES = {
           ['Sin información previa n = '+fm(ncon)+'; con p = '+f(pv,2)+', n = '+fm(nsin),
            'En ambos casos n = '+fm(nsin)+', porque la información previa no afecta el cálculo',
            'Sin información previa n = '+fm(Math.ceil(z*z/(E*E)))+'; con p = '+f(pv,2)+', n = '+fm(ncon)]),
-        sust:true, ayuda:'\\(n = z^{2}\\cdot p(1-p)/E^{2}\\). Sin información previa se toma \\(p = 0.5\\).' };
+        sust:true, ayuda:'$$n=\\frac{z_{\\alpha/2}^{2}\\;p(1-p)}{E^{2}}$$ Sin información previa se toma \\(p=0{,}5\\).' };
     }
   ]
  ]},
@@ -2434,24 +2447,24 @@ const QUICES = {
     },
     r => { const mu0=rstep(r,940,980,5), sg=rstep(r,110,140,5), n=pick(r,[36,49,64]), mu1=+(mu0+rstep(r,30,70,5)).toFixed(0);
       const se=sg/Math.sqrt(n), xc=mu0+1.645*se, beta=pnorm((xc-mu1)/se);
-      return { q:`Se prueba \\(H_0\\): \\(\\mu = 0 \\ \\text{kWh}\\) contra \\(H_1\\): μ > ${fm(mu0)} kWh, con \\(\\sigma = 2 \\ \\text{kWh}, n = 3\\) y \\(\\alpha = 0.05\\). Calcule β y la potencia si el consumo real fuera \\(\\mu_1\\;= 4 \\ \\text{kWh}\\).`,
+      return { q:`Se prueba \\(H_0\\): μ = ${fm(mu0)} kWh contra \\(H_1\\): μ > ${fm(mu0)} kWh, con σ = ${fm(sg)} kWh, n = ${n} y α = 0.05. Calcule β y la potencia si el consumo real fuera \\(\\mu_1\\) = ${fm(mu1)} kWh.`,
         ...mc(r,'β = '+f(beta,4)+' y potencia = '+f(1-beta,4),
           ['β = '+f(1-beta,4)+' y potencia = '+f(beta,4),
            'β = 0.0500 y potencia = 0.9500',
            'β = '+f(pnorm((xc-mu0)/se),4)+' y potencia = '+f(1-pnorm((xc-mu0)/se),4)]),
-        sust:true, ayuda:'\\(\\bar{x}\\)_c = \\(\\mu_0\\) + z_α·σ/√n. Luego β = P(\\(\\bar{x}\\) < \\(\\bar{x}\\)_c | μ = \\(\\mu_1\\)) = Φ((\\(\\bar{x}\\)_c − \\(\\mu_1\\))/(σ/√n)).' };
+        sust:true, ayuda:'$$\\bar{x}_c=\\mu_0+z_{\\alpha}\\frac{\\sigma}{\\sqrt{n}}\\qquad \\beta=P\\!\\left(\\bar{X}<\\bar{x}_c\\mid\\mu=\\mu_1\\right)=\\Phi\\!\\left(\\frac{\\bar{x}_c-\\mu_1}{\\sigma/\\sqrt{n}}\\right)$$' };
     }
   ],
   [ r => { const p=rstep(r,0.008,0.045,0.001), al=pick(r,[0.05,0.01]);
       const rech = p<=al;
-      return { q:`Una prueba de hipótesis arroja un valor \\(p = \\mathbf{ 0 }\\) con un nivel de significancia \\(\\alpha = \\mathbf{ 1 }\\). ¿Cuál es la decisión y su interpretación correcta?`,
+      return { q:`Una prueba de hipótesis arroja un valor p = <b>${f(p,3)}</b> con un nivel de significancia α = <b>${f(al,2)}</b>. ¿Cuál es la decisión y su interpretación correcta?`,
         ...mc(r, (rech?'Se rechaza \\(H_0\\)':'No se rechaza \\(H_0\\)')+': si \\(H_0\\) fuera cierta, resultados tan extremos como el observado ocurrirían el '+f(100*p,1)+' % de las veces',
           [(rech?'Se rechaza \\(H_0\\)':'No se rechaza \\(H_0\\)')+': hay un '+f(100*p,1)+' % de probabilidad de que \\(H_0\\) sea verdadera',
            (rech?'No se rechaza \\(H_0\\)':'Se rechaza \\(H_0\\)')+': el valor p indica lo contrario de lo que parece',
            (rech?'Se rechaza \\(H_0\\)':'No se rechaza \\(H_0\\)')+': el efecto encontrado es de magnitud importante en la práctica']),
         sust:false };
     },
-    r => { return { q:`Con \\(n = 3\\,500\\) jornadas, una diferencia de 2 kWh entre dos planes de mantenimiento resulta significativa con p < 0.001. ¿Cuál es la lectura correcta de este resultado?`,
+    r => { return { q:`Con n = 3 500 jornadas, una diferencia de 2 kWh entre dos planes de mantenimiento resulta significativa con p < 0.001. ¿Cuál es la lectura correcta de este resultado?`,
         ...mc(r,'La diferencia es real y no atribuible al azar, pero su magnitud puede ser irrelevante en la práctica; hay que acompañar el valor p con el intervalo de confianza y con el análisis económico',
           ['La diferencia es enorme, porque el valor p es muy pequeño',
            'El resultado es un error, porque con n grande las pruebas dejan de ser válidas',
@@ -2475,12 +2488,12 @@ const QUICES = {
  slots:[
   [ r => { const mu0=rstep(r,930,970,5), n=pick(r,[12,16,20,25]), xb=+(mu0+rstep(r,30,75,5)).toFixed(0), s=rstep(r,95,135,1), al=0.05;
       const t=(xb-mu0)/(s/Math.sqrt(n)), tc=qt(1-al,n-1), p=1-pt(t,n-1);
-      return { q:`Una muestra de <b>${n}</b> jornadas arroja \\(\\bar{x}\\;= 1 \\ \\text{kWh}\\) y \\(s = 2 \\ \\text{kWh}\\). Contraste al 5 % si el consumo medio supera ${fm(mu0)} kWh. (\\(t_{0.05,\\,${n-1}}\\) = ${f(tc,3)})`,
+      return { q:`Una muestra de <b>${n}</b> jornadas arroja \\(\\bar{x}\\) = ${fm(xb)} kWh y s = ${fm(s)} kWh. Contraste al 5 % si el consumo medio supera ${fm(mu0)} kWh. (\\(t_{0.05,\\,${n-1}}\\) = ${f(tc,3)})`,
         ...mc(r,'t = '+f(t,3)+' > '+f(tc,3)+', se rechaza \\(H_0\\) (valor p = '+f(p,4)+')',
           ['t = '+f(t,3)+' < '+f(tc,3)+', no se rechaza \\(H_0\\)',
            'z = '+f((xb-mu0)/(s/Math.sqrt(n)),3)+', se usa la normal porque n es grande y no se rechaza \\(H_0\\)',
            't = '+f((xb-mu0)/s,3)+', no se rechaza \\(H_0\\)']),
-        sust:true, ayuda:'t = (\\(\\bar{x} - \\mu_0\\))/(s/√n), con n − 1 gl. Cola derecha.' };
+        sust:true, ayuda:'$$t=\\frac{\\bar{x}-\\mu_0}{s/\\sqrt{n}}$$ con \\(n-1\\) grados de libertad. Prueba de cola derecha.' };
     },
     r => { const p0=pick(r,[0.60,0.65,0.70,0.75]), n=pick(r,[600,800,1000,1200]);
       const ph=+(p0+rstep(r,-0.06,-0.02,0.005)).toFixed(4), x=Math.round(n*ph);
@@ -2490,16 +2503,16 @@ const QUICES = {
           ['z = '+f(z,3)+', valor p = '+f(p/2,4)+' — se rechaza \\(H_0\\) por ser prueba de una cola',
            'z = '+f((x/n-p0)/Math.sqrt(x/n*(1-x/n)/n),3)+', se usa \\(\\hat{p}\\) en el error estándar y no se rechaza \\(H_0\\)',
            'z = '+f(z*Math.sqrt(n),3)+', valor p ≈ 0 — se rechaza \\(H_0\\)']),
-        sust:true, ayuda:'Bajo \\(H_0\\) el error estándar se calcula con p₀, no con \\(\\hat{p}\\): z = (\\(\\hat{p}\\) − p₀)/√(p₀(1−p₀)/n). Dos colas.' };
+        sust:true, ayuda:'Bajo \\(H_0\\) el error estándar se calcula con \\(p_0\\), no con \\(\\hat{p}\\): $$z=\\frac{\\hat{p}-p_0}{\\sqrt{\\dfrac{p_0(1-p_0)}{n}}}$$ Prueba de dos colas.' };
     },
     r => { const s0=pick(r,[110,120,130]), n=pick(r,[20,25,30]), s=+(s0+rstep(r,12,30,1)).toFixed(0);
       const chi=(n-1)*s*s/(s0*s0), cc=qchisq(0.95,n-1), p=1-pchisq(chi,n-1);
-      return { q:`La especificación exige que la desviación estándar del consumo no supere <b>${fm(s0)} kWh</b>. Una muestra de <b>${n}</b> jornadas arroja \\(s = 2 \\ \\text{kWh}\\). Contraste al 5 %. (\\(\\chi^2_{0.05,\\,${n-1}}\\) = ${f(cc,3)})`,
+      return { q:`La especificación exige que la desviación estándar del consumo no supere <b>${fm(s0)} kWh</b>. Una muestra de <b>${n}</b> jornadas arroja s = ${fm(s)} kWh. Contraste al 5 %. (\\(\\chi^2_{0.05,\\,${n-1}}\\) = ${f(cc,3)})`,
         ...mc(r,'\\(\\chi^2\\) = '+f(chi,3)+(chi>cc?' > ':' < ')+f(cc,3)+', '+(chi>cc?'se rechaza \\(H_0\\)':'no se rechaza \\(H_0\\)')+' (valor p = '+f(p,4)+')',
           ['\\(\\chi^2\\) = '+f(n*s*s/(s0*s0),3)+', '+(chi>cc?'se rechaza \\(H_0\\)':'no se rechaza \\(H_0\\)'),
            '\\(\\chi^2\\) = '+f(chi,3)+', '+(chi>cc?'no se rechaza \\(H_0\\)':'se rechaza \\(H_0\\)')+' porque la prueba es de dos colas',
            'z = '+f((s-s0)/s0,3)+', no se rechaza \\(H_0\\)']),
-        sust:true, ayuda:'\\(\\chi^2\\;= (n-1)\\;s^2\\)/σ₀², con n − 1 gl. Cola derecha.' };
+        sust:true, ayuda:'$$\\chi^{2}=\\frac{(n-1)s^{2}}{\\sigma_0^{2}}$$ con \\(n-1\\) grados de libertad. Prueba de cola derecha.' };
     }
   ],
   [ r => { const caso=pick(r,[
@@ -2537,12 +2550,12 @@ const QUICES = {
       const xb1=rstep(r,940,970,1), xb2=+(xb1+rstep(r,15,45,1)).toFixed(0);
       const s1=rstep(r,115,135,1), s2=rstep(r,115,135,1);
       const se=Math.sqrt(s1*s1/n1+s2*s2/n2), t=(xb1-xb2)/se, p=pt(t,Math.min(n1,n2)-1);
-      return { q:`Plan preventivo: \\(n_1\\) = ${n1}, \\(\\bar{x}_1\\;= 1 \\ \\text{kWh}\\), \\(s_1\\;= 2 \\ \\text{kWh}\\). Plan correctivo: \\(n_2\\) = ${n2}, \\(\\bar{x}_2\\;= 4 \\ \\text{kWh}\\), \\(s_2\\;= 5 \\ \\text{kWh}\\). Contraste al 5 % si el preventivo consume <b>menos</b>. Use el error estándar √(\\(s_1^{2}/n_1 + s_2^{2}/n_2\\)).`,
+      return { q:`Plan preventivo: \\(n_1\\) = ${n1}, \\(\\bar{x}_1\\) = ${fm(xb1)} kWh, \\(s_1\\) = ${fm(s1)} kWh. Plan correctivo: \\(n_2\\) = ${n2}, \\(\\bar{x}_2\\) = ${fm(xb2)} kWh, \\(s_2\\) = ${fm(s2)} kWh. Contraste al 5 % si el preventivo consume <b>menos</b>. Use el error estándar √(\\(s_1^{2}/n_1 + s_2^{2}/n_2\\)).`,
         ...mc(r,'t = '+f(t,3)+' con valor p de una cola = '+f(p,4)+' — '+(p<=0.05?'se rechaza \\(H_0\\), el preventivo consume menos':'no se rechaza \\(H_0\\)'),
           ['t = '+f(-t,3)+', se rechaza \\(H_0\\) porque el estadístico es positivo',
            't = '+f(t,3)+' con valor p = '+f(2*p,4)+' — se debe usar dos colas porque hay dos poblaciones',
            't = '+f((xb1-xb2)/(s1+s2),3)+', no se rechaza \\(H_0\\)']),
-        sust:true, ayuda:'\\(H_0\\): \\(\\mu_1\\) ≥ μ₂ contra \\(H_1\\): \\(\\mu_1\\) < μ₂. Cola izquierda: el valor p es el área a la izquierda de t.' };
+        sust:true, ayuda:'\\(H_0\\!:\\;\\mu_1\\ge\\mu_2\\) contra \\(H_1\\!:\\;\\mu_1<\\mu_2\\). Cola izquierda: el valor \\(p\\) es el área a la izquierda de \\(t\\).' };
     },
     r => { const n1=pick(r,[800,900,1000]), n2=pick(r,[700,850,950]);
       const p1=rstep(r,0.62,0.72,0.005), p2=+(p1-rstep(r,0.06,0.14,0.005)).toFixed(4);
@@ -2554,18 +2567,18 @@ const QUICES = {
           ['z = '+f((x1/n1-x2/n2)/Math.sqrt(p1*(1-p1)/n1+p2*(1-p2)/n2),3)+', se debe usar cada \\(\\hat{p}\\) por separado bajo \\(H_0\\)',
            'z = '+f(z,3)+', valor p = '+f(p/2,4)+' — la prueba es de una cola',
            'z = '+f(z/2,3)+', no se rechaza \\(H_0\\)']),
-        sust:true, ayuda:'\\(\\bar{p}\\) = (x₁+x₂)/(\\(n_1 + n_2\\)); z = (\\(\\hat{p}_1 - \\hat{p}_2\\))/√(\\(\\bar{p}\\)(1−\\(\\bar{p}\\))(1/\\(n_1\\) + 1/\\(n_2\\))). Dos colas.' };
+        sust:true, ayuda:'$$\\bar{p}=\\frac{x_1+x_2}{n_1+n_2}\\qquad z=\\frac{\\hat{p}_1-\\hat{p}_2}{\\sqrt{\\bar{p}(1-\\bar{p})\\left(\\dfrac{1}{n_1}+\\dfrac{1}{n_2}\\right)}}$$ Prueba de dos colas.' };
     },
     r => { const n1=pick(r,[13,16,21]), n2=pick(r,[11,13,16]);
       const s1=rstep(r,130,160,1), s2=rstep(r,90,115,1);
       const F=s1*s1/(s2*s2), fc=qf(0.975,n1-1,n2-1), fi=qf(0.025,n1-1,n2-1);
       const rech = (F>fc)||(F<fi);
-      return { q:`Área A: \\(n_1\\) = ${n1}, \\(s_1\\;= 1 \\ \\text{kWh}\\). Área B: \\(n_2\\) = ${n2}, \\(s_2\\;= 3 \\ \\text{kWh}\\). Contraste al 5 % (dos colas) si las varianzas difieren. Use \\(F_{0.025,\\,${n1-1},\\,${n2-1}}\\) = ${f(fc,3)} y \\(F_{0.975,\\,${n1-1},\\,${n2-1}}\\) = ${f(fi,3)}.`,
+      return { q:`Área A: \\(n_1\\) = ${n1}, \\(s_1\\) = ${fm(s1)} kWh. Área B: \\(n_2\\) = ${n2}, \\(s_2\\) = ${fm(s2)} kWh. Contraste al 5 % (dos colas) si las varianzas difieren. Use \\(F_{0.025,\\,${n1-1},\\,${n2-1}}\\) = ${f(fc,3)} y \\(F_{0.975,\\,${n1-1},\\,${n2-1}}\\) = ${f(fi,3)}.`,
         ...mc(r,'F = '+f(F,3)+', '+(rech?'cae en la región de rechazo: se rechaza \\(H_0\\)':'está entre los dos valores críticos: no se rechaza \\(H_0\\)'),
           ['F = '+f(1/F,3)+', '+(rech?'se rechaza \\(H_0\\)':'no se rechaza \\(H_0\\)'),
            'F = '+f(s1/s2,3)+', se compara la razón de desviaciones y '+(rech?'se rechaza \\(H_0\\)':'no se rechaza \\(H_0\\)'),
            '\\(\\chi^2\\) = '+f((n1-1)*s1*s1/(s2*s2),3)+', se rechaza \\(H_0\\)']),
-        sust:true, ayuda:'F = \\(s_1^{2}/s_2^{2}\\) con \\(n_1\\)−1 y \\(n_2\\)−1 gl. Se rechaza si F cae fuera del intervalo entre los dos valores críticos.' };
+        sust:true, ayuda:'$$F=\\frac{s_1^{2}}{s_2^{2}}$$ con \\(n_1-1\\) y \\(n_2-1\\) grados de libertad. Se rechaza si \\(F\\) cae fuera del intervalo entre los dos valores críticos.' };
     }
   ]
  ]},
@@ -2589,13 +2602,13 @@ const QUICES = {
           ['\\(\\hat{y}\\) = '+f(eb1,4)+' + '+f(eb0,3)+' x',
            '\\(\\hat{y}\\) = '+f(eb0,3)+' − '+f(eb1,4)+' x',
            '\\(\\hat{y}\\) = '+f(sy/n,3)+' + '+f(Sxy/sxx,4)+' x']),
-        sust:true, ayuda:'\\(b_1\\) = S_xy/S_xx con S_xy = Σxy − (Σx)(Σy)/n y S_xx = Σx² − (Σx)²/n. Luego \\(b_0\\) = ȳ − \\(b_1\\;\\bar{x}\\).' };
+        sust:true, ayuda:'$$b_1=\\frac{S_{xy}}{S_{xx}}\\qquad S_{xy}=\\sum x_iy_i-\\frac{\\left(\\sum x_i\\right)\\left(\\sum y_i\\right)}{n}\\qquad S_{xx}=\\sum x_i^{2}-\\frac{\\left(\\sum x_i\\right)^{2}}{n}$$ Luego \\(b_0=\\bar{y}-b_1\\bar{x}\\).' };
     },
     r => { const b0=rstep(r,380,420,1), b1=rstep(r,0.40,0.52,0.001), x=rstep(r,1150,1450,25);
       const y=b0+b1*x;
       return { q:`El modelo ajustado es <b>\\(\\hat{y}\\) = ${fm(b0)} + ${f(b1,4)} x</b>, donde x es la producción en kg y \\(\\hat{y}\\) el consumo en kWh. Prediga el consumo para una jornada de <b>${fm(x)} kg</b>.`,
         ...mc(r, f(y,2)+' kWh', [f(b0*x+b1,2)+' kWh', f(b1*x,2)+' kWh', f(b0+b1,2)+' kWh']),
-        sust:true, ayuda:'Sustituya el valor de x en la ecuación de la recta.' };
+        sust:true, ayuda:'Sustituya el valor de \\(x\\) en la ecuación de la recta.' };
     },
     r => { const b1=rstep(r,0.38,0.55,0.001), d=pick(r,[50,80,100,120]);
       return { q:`En el modelo consumo = \\(b_0\\) + ${f(b1,4)}·producción, con el consumo en kWh y la producción en kg, interprete el coeficiente de la pendiente y calcule el cambio esperado en el consumo si la producción aumenta en <b>${fm(d)} kg</b>.`,
@@ -2603,25 +2616,25 @@ const QUICES = {
           ['Por cada kWh adicional la producción sube '+f(b1,4)+' kg; para '+fm(d)+' kg el cambio es '+f(d/b1,2)+' kWh',
            'El consumo aumenta '+f(b1,4)+' % por cada kg adicional; para '+fm(d)+' kg el aumento es '+f(b1*d,2)+' %',
            'Por cada kg adicional el consumo sube '+f(b1,4)+' kWh; para '+fm(d)+' kg el aumento es '+f(b1+d,2)+' kWh']),
-        sust:true, ayuda:'La pendiente es el cambio promedio en Y por unidad de X, con unidades de Y sobre unidades de X.' };
+        sust:true, ayuda:'La pendiente es el cambio promedio en \\(Y\\) por cada unidad de \\(X\\), con unidades de \\(Y\\) sobre unidades de \\(X\\).' };
     }
   ],
   [ r => { const rr=rstep(r,0.72,0.96,0.005);
-      return { q:`En un modelo de regresión simple entre la antigüedad de la máquina y los defectos por 1 000 m se obtiene \\(\\mathbf{r = 0 }\\). ¿Cuál es el valor de \\(R^2\\) y cómo se interpreta?`,
+      return { q:`En un modelo de regresión simple entre la antigüedad de la máquina y los defectos por 1 000 m se obtiene <b>r = ${f(rr,3)}</b>. ¿Cuál es el valor de \\(R^2\\) y cómo se interpreta?`,
         ...mc(r,'\\(R^2\\) = '+f(rr*rr,4)+': el '+f(100*rr*rr,2)+' % de la variabilidad de los defectos queda explicada por el modelo',
           ['\\(R^2\\) = '+f(rr,4)+': el '+f(100*rr,2)+' % de la variabilidad queda explicada por el modelo',
            '\\(R^2\\) = '+f(Math.sqrt(rr),4)+': el '+f(100*Math.sqrt(rr),2)+' % de la variabilidad queda explicada',
            '\\(R^2\\) = '+f(rr*rr,4)+': el '+f(100*rr*rr,2)+' % de las máquinas presenta defectos']),
-        sust:true, ayuda:'En regresión lineal simple, \\(R^2\\) = r².' };
+        sust:true, ayuda:'En regresión lineal simple se cumple que \\(R^{2}=r^{2}\\).' };
     },
     r => { const r2a=rstep(r,0.84,0.88,0.001), r2b=+(r2a+rstep(r,0.03,0.06,0.001)).toFixed(4), n=3500;
       const aja=1-(1-r2a)*(n-1)/(n-2), ajb=1-(1-r2b)*(n-1)/(n-5);
-      return { q:`Modelo A (1 predictor): \\(R^2\\) = ${f(r2a,4)}. Modelo B (4 predictores): \\(R^2\\) = ${f(r2b,4)}. Con \\(n = 2\\), calcule el \\(R^2\\) ajustado de cada uno y decida cuál modelo se prefiere.`,
+      return { q:`Modelo A (1 predictor): \\(R^2\\) = ${f(r2a,4)}. Modelo B (4 predictores): \\(R^2\\) = ${f(r2b,4)}. Con n = ${fm(n)}, calcule el \\(R^2\\) ajustado de cada uno y decida cuál modelo se prefiere.`,
         ...mc(r,'\\(R^2_{\\mathrm{aj}}\\)(A) = '+f(aja,5)+' y \\(R^2_{\\mathrm{aj}}\\)(B) = '+f(ajb,5)+'; se prefiere B porque su \\(R^2\\) ajustado es mayor',
           ['\\(R^2_{\\mathrm{aj}}\\)(A) = '+f(aja,5)+' y \\(R^2_{\\mathrm{aj}}\\)(B) = '+f(ajb,5)+'; se prefiere A porque usa menos variables',
            'Se prefiere B simplemente porque tiene mayor \\(R^2\\), sin necesidad de ajustar',
            'Ambos son equivalentes porque la diferencia de \\(R^2\\) es menor a 0.10']),
-        sust:true, ayuda:'\\(R^2\\)_aj = 1 − (1 − \\(R^2\\))(n − 1)/(n − k − 1), donde k es el número de predictores.' };
+        sust:true, ayuda:'$$R^{2}_{aj}=1-\\left(1-R^{2}\\right)\\frac{n-1}{n-k-1}$$ donde \\(k\\) es el número de predictores.' };
     },
     r => { return { q:`En una regresión múltiple del consumo sobre producción, horas de operación, antigüedad y temperatura, el coeficiente de la antigüedad es 3.714. ¿Cuál es su interpretación correcta?`,
         ...mc(r,'Por cada año adicional de antigüedad el consumo aumenta en promedio 3.714 kWh, manteniendo constantes la producción, las horas de operación y la temperatura',
@@ -2632,7 +2645,7 @@ const QUICES = {
     }
   ],
   [ r => { const rr=rstep(r,0.70,0.85,0.01);
-      return { q:`Un analista encuentra \\(\\mathbf{r = 0 }\\) entre el número de paradas no programadas y los defectos por 1 000 m, y concluye que las paradas causan los defectos, por lo que recomienda eliminarlas. ¿Cuál es la principal objeción?`,
+      return { q:`Un analista encuentra <b>r = ${f(rr,2)}</b> entre el número de paradas no programadas y los defectos por 1 000 m, y concluye que las paradas causan los defectos, por lo que recomienda eliminarlas. ¿Cuál es la principal objeción?`,
         ...mc(r,'La correlación no establece causalidad: la relación puede deberse a causalidad inversa o a una variable de confusión, como la antigüedad de la máquina, que genera tanto más paradas como más defectos',
           ['El valor de r es demasiado bajo para concluir algo, se necesita r > 0.95',
            'El error está en usar r en vez de \\(R^2\\), que es el único indicador válido de asociación',
@@ -3496,6 +3509,123 @@ function listaRepaso(){
 /* ---------- refresco tras cada cambio ---------- */
 function refrescarProgreso(){ /* el mapa se retiró de la portada */ }
 /* =====================================================================
+   CONVERSIÓN AUTOMÁTICA DE TEXTO A MATEMÁTICA
+   El estudiante escribe con símbolos normales (σ, √, ≤, x̄) y la página
+   arma el LaTeX por dentro. Nunca ve código.
+   ===================================================================== */
+const G_MAT = {'α':'\\alpha','β':'\\beta','γ':'\\gamma','δ':'\\delta','ε':'\\varepsilon',
+  'θ':'\\theta','λ':'\\lambda','μ':'\\mu','ν':'\\nu','π':'\\pi','ρ':'\\rho','σ':'\\sigma',
+  'τ':'\\tau','φ':'\\phi','χ':'\\chi','ω':'\\omega','Φ':'\\Phi','Σ':'\\sum','Δ':'\\Delta'};
+const SUB_MAT = {'₀':'0','₁':'1','₂':'2','₃':'3','₄':'4','₅':'5','₆':'6','₇':'7','₈':'8','₉':'9'};
+const SUP_MAT = {'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9','⁻':'-'};
+const UNI_MAT = ['kWh','COP','ppm','min','bar','kg','mm','pp','gl'];
+const STOP_MAT = new Set(['y','o','e','u','a','de','en','el','la','si','un','se','es','al','lo',
+  'su','no','ni','del','con','por','que','ya','le','mi','tu','me','te','lo']);
+
+function esMath(t){
+  if (!t) return false;
+  if (t.length === 1) return !'yoeua'.includes(t);
+  if (STOP_MAT.has(t.toLowerCase())) return false;
+  if (UNI_MAT.includes(t)) return true;
+  if (!/^[0-9.,;()[\]{}+\-−=/^*×·±<>≤≥≈√|°A-Za-zαβγδεθλμνπρστφχωΣΠΦ₀-₉⁰-⁹²³⁻\u0304\u0302]+$/.test(t)) return false;
+  if (/[a-z]{3,}/.test(t) && !UNI_MAT.includes(t)) return false;
+  return /[0-9=/√Σ^αβγδεθλμνπρστφχω₀-₉⁰-⁹²³\u0304\u0302]/.test(t) || t.length <= 2;
+}
+
+function texSimbolo(t){
+  t = t.normalize('NFD');
+  let out = '', i = 0;
+  while (i < t.length){
+    const c = t[i];
+    if (i + 1 < t.length && (t[i+1] === '\u0304' || t[i+1] === '\u0302')){
+      out += (t[i+1] === '\u0304' ? '\\bar{' : '\\hat{') + c + '}'; i += 2; continue;
+    }
+    if (c === '√'){
+      if (t[i+1] === '('){
+        let d = 0, j = i + 1;
+        for (; j < t.length; j++){ if (t[j] === '(') d++; else if (t[j] === ')'){ d--; if (!d) break; } }
+        if (!d){ out += '\\sqrt{' + texExpr(t.slice(i+2, j)) + '}'; i = j + 1; continue; }
+      }
+      const m = /^√([\d.]+|[A-Za-zαβγδεθλμνπρστφχω])/.exec(t.slice(i));
+      if (m){ out += '\\sqrt{' + texSimbolo(m[1]) + '}'; i += m[0].length; continue; }
+      out += '\\sqrt{\\;}'; i++; continue;
+    }
+    if (G_MAT[c]){ out += G_MAT[c] + ' '; i++; continue; }
+    if (SUB_MAT[c]){ let j = i;
+      while (j < t.length && (SUB_MAT[t[j]] || (t[j] === '.' && SUB_MAT[t[j+1]]))) j++;
+      out += '_{' + t.slice(i, j).split('').map(x => SUB_MAT[x] || x).join('') + '}'; i = j; continue; }
+    if (SUP_MAT[c]){ let j = i; while (j < t.length && SUP_MAT[t[j]]) j++;
+      out += '^{' + t.slice(i, j).split('').map(x => SUP_MAT[x]).join('') + '}'; i = j; continue; }
+    if (c === '−'){ out += '-'; i++; continue; }
+    if (c === '×'){ out += '\\times '; i++; continue; }
+    if (c === '·'){ out += '\\cdot '; i++; continue; }
+    if (c === '±'){ out += '\\pm '; i++; continue; }
+    if (c === '≈'){ out += '\\approx '; i++; continue; }
+    if (c === '≤'){ out += '\\le '; i++; continue; }
+    if (c === '≥'){ out += '\\ge '; i++; continue; }
+    if (c === '≠'){ out += '\\ne '; i++; continue; }
+    if (c === '<'){ out += '\\lt '; i++; continue; }
+    if (c === '>'){ out += '\\gt '; i++; continue; }
+    if (c === '°'){ out += '^{\\circ}'; i++; continue; }
+    out += c; i++;
+  }
+  return out;
+}
+
+/* a/b se convierte en fracción apilada cuando ambos lados son simples */
+function texFrac(e){
+  const p = /(?<![\w)])(\([^()]{1,40}\)|[\d.]+|√\([^()]{1,30}\)|[A-Za-zαβγδεθλμνπρστφχω][₀-₉²³]?)\/(\([^()]{1,40}\)|[\d.]+|√\([^()]{1,30}\)|√[\d.]+|[A-Za-zαβγδεθλμνπρστφχω][₀-₉²³]?)/g;
+  return e.replace(p, (m, a, b) => {
+    const q = x => (x.startsWith('(') && x.endsWith(')')) ? x.slice(1, -1) : x;
+    return '\u0001' + texSimbolo(q(a)) + '\u0002' + texSimbolo(q(b)) + '\u0003';
+  });
+}
+function texExpr(e){
+  let r = texFrac(e);
+  const partes = r.split(/([\u0001\u0002\u0003])/);
+  let out = '';
+  for (const p of partes){
+    if (p === '\u0001') out += '\\dfrac{';
+    else if (p === '\u0002') out += '}{';
+    else if (p === '\u0003') out += '}';
+    else if (p) out += texSimbolo(p);
+  }
+  out = out.replace(/(?<![\\A-Za-z])(kWh|COP|ppm|min|bar|kg|mm|pp|gl)(?![A-Za-z])/g, '\\;\\text{$1}');
+  return out.replace(/\s+/g, ' ').trim();
+}
+
+/* recorre el texto y compone en matemática los tramos de cálculo */
+function texAuto(texto){
+  const seguro = String(texto || '')
+    .replace(/&/g, '&amp;').replace(/</g, '\u0005').replace(/>/g, '\u0006');
+  return seguro.split('\n').map(linea => {
+    const piezas = linea.split(/(\s+)/);
+    let res = '', buf = [];
+    const volcar = () => {
+      if (!buf.length) return;
+      const crudo = buf.join('');
+      const nucleo = crudo.trim();
+      const pre = crudo.slice(0, crudo.length - crudo.trimStart().length);
+      const post = crudo.slice(pre.length + nucleo.length);
+      const par = (nucleo.match(/\(/g) || []).length === (nucleo.match(/\)/g) || []).length;
+      const vale = nucleo.length >= 3 && par &&
+        (/[=√Σ≤≥≠±]/.test(nucleo) || (/\//.test(nucleo) && /\d/.test(nucleo)));
+      if (vale){
+        const m = /^(.*?)([.,;:]?)$/s.exec(nucleo);
+        res += pre + '\\(' + texExpr(m[1]) + '\\)' + m[2] + post;
+      } else res += crudo;
+      buf = [];
+    };
+    for (const t of piezas){
+      if (/^\s+$/.test(t)){ if (buf.length) buf.push(t); else res += t; }
+      else if (esMath(t.replace(/^[¿¡"']+|[.,:"'?!]+$/g, ''))) buf.push(t);
+      else { volcar(); res += t; }
+    }
+    volcar();
+    return res;
+  }).join('<br>').replace(/\u0005/g, '&lt;').replace(/\u0006/g, '&gt;');
+}
+/* =====================================================================
    CONFIGURACIÓN DE ENTREGA DE RESULTADOS
    ---------------------------------------------------------------------
    Si urlEnvio queda vacía, la página funciona sin servidor: el estudiante
@@ -3506,10 +3636,8 @@ function refrescarProgreso(){ /* el mapa se retiró de la portada */ }
    automáticamente y el flujo lo guarda en OneDrive. El estudiante
    igual puede descargar su copia.
    ===================================================================== */
-
 const CONFIG = {
-  urlEnvio: 'https://script.google.com/macros/s/AKfycbxz79rrtjlSkvFsiqpbtgKuyksQpfoeut1-l3RpXvDRJJqGXsfeW8Jgq0kdwetjof4E/exec',
-  enviarFotos: true,
+  urlEnvio: '',            // ej.: 'https://prod-12.westus.logic.azure.com:443/workflows/.../invoke?...'
   reintentos: 2
 };
 
@@ -3710,7 +3838,7 @@ function renderPortada(){
         <li><b>Dos oportunidades.</b> Se conserva la mejor nota. El segundo intento trae preguntas diferentes.</li>
         <li>Al iniciar, la página <b>bloquea la pantalla</b>. No se puede salir a otra pestaña ni a otra aplicación.</li>
         <li>Si el estudiante abandona la pantalla, <b>el intento queda anulado con nota cero</b> y solo le queda el segundo intento.</li>
-        <li>Cada pregunta de cálculo exige <b>sustentación</b>: el procedimiento escrito y la foto del desarrollo a mano.</li>
+        <li>Cada pregunta de cálculo exige <b>sustentación escrita</b>, con un editor de ecuaciones incorporado.</li>
         <li><b>Las preguntas sin sustentación no suman puntaje</b>, aunque la opción marcada sea la correcta.</li>
         <li>Al terminar se descarga un archivo de evidencia que debe subirse al aula virtual.</li>
       </ul>
@@ -3992,19 +4120,22 @@ function panelQuiz(k){
       <ul style="margin:8px 0 0">
         <li>El quiz es <b>individual</b>. Las preguntas se generan a partir de tu número de identificación,
         así que las tuyas no son iguales a las de tus compañeros.</li>
-        <li>Al pulsar <b>Iniciar quiz</b> la pantalla se bloquea. <b>No puedes salir</b> a otra pestaña,
+        <li>Al pulsar <b>Iniciar quiz</b> la pantalla se bloquea. <b>No debes salir</b> a otra pestaña,
         a otra ventana ni a otra aplicación.</li>
-        <li>Si abandonas la pantalla, <b>el intento queda anulado con nota cero</b> y solo te quedará
-        el segundo intento, que traerá preguntas distintas.</li>
+        <li>Si sales, recibes un aviso. <b>Al tercer aviso el intento queda anulado con nota cero</b>
+        y solo te quedará el segundo intento, que traerá preguntas distintas.</li>
         <li>El cronómetro de 45 minutos <b>no se detiene</b> por ningún motivo.</li>
-        <li>Las preguntas de cálculo exigen <b>sustentación</b>: el procedimiento escrito y la foto de tu
-        desarrollo a mano. <b>Una pregunta sin sustentación no suma puntaje</b>, aunque la opción marcada sea correcta.</li>
+        <li>Las preguntas de cálculo exigen <b>sustentación escrita</b>: el procedimiento, las fórmulas y
+        los valores intermedios. Escribe como en el cuaderno: hay <b>botones de símbolos</b> (σ, √, x̄, ≤) y
+        abajo verás tu respuesta con la matemática ya compuesta. <b>No tienes que aprender ningún código.</b>
+        <b>Una pregunta sin sustentación no suma puntaje</b>, aunque la opción marcada sea correcta.</li>
         <li>Al finalizar se descarga tu archivo de evidencia. <b>Ese archivo debe subirse al aula virtual</b>
         para que la nota sea registrada.</li>
       </ul>
     </div>
     <div class="nota">Ten listos hoja, lápiz, calculadora y las tablas estadísticas
-    (están en <b>Tablas estadísticas</b>, al inicio de la página). Resuelve en papel y después marca.</div>
+    (están en <b>Tablas estadísticas</b>, al inicio de la página). Resuelve en papel, marca la opción
+    y transcribe el procedimiento en el cuadro de sustentación.</div>
 
     <h3>Identificación</h3>
     <p style="font-size:14.5px;color:var(--gris);margin:0 0 4px">Solo se piden estos dos datos. Escríbelos tal como aparecen en tu documento.</p>
@@ -4069,8 +4200,8 @@ function iniciarQuiz(k, nombre, cedula, intento){
   const preguntas = generarPreguntas(k, cedula, intento);
   Q = { k, nombre, cedula, intento, preguntas,
         respuestas: new Array(3).fill(null), sust: new Array(3).fill(''),
-        evid: [[],[],[]], inicio: Date.now(), fin: Date.now() + 45*60*1000,
-        cerrado: false, avisos: 0 };
+        inicio: Date.now(), fin: Date.now() + 45*60*1000,
+        cerrado: false, avisos: 0, salidas: 0, enPausa: false };
   pintarQuiz();
   document.getElementById('quizModal').classList.add('on');
   document.body.style.overflow = 'hidden';
@@ -4091,16 +4222,30 @@ function salirPantallaCompleta(){
 }
 
 /* --------------------------- vigilancia --------------------------- */
-const vigVisibilidad = () => { if (document.hidden) anular('cambiaste de pestaña o minimizaste la ventana'); };
-const vigBlur = () => { setTimeout(() => { if (!document.hasFocus() && !Q?.cerrado) anular('la ventana perdió el foco: saliste a otra aplicación o ventana'); }, 400); };
+/* Tres avisos antes de anular. Evita que una notificación o un cambio
+   momentáneo de foco arruinen el intento. */
+const TOLERANCIA = 3;
+function salida(motivo){
+  if (!Q || Q.cerrado || Q.enPausa) return;
+  Q.salidas = (Q.salidas || 0) + 1;
+  if (Q.salidas >= TOLERANCIA){ anular(motivo + ' (' + Q.salidas + ' veces)'); return; }
+  mostrarAviso(`<h3>Saliste de la pantalla del quiz</h3>
+    <div class="n">${Q.salidas} de ${TOLERANCIA}</div>
+    <p>Detectamos que ${motivo}. El quiz debe presentarse sin salir de esta pantalla.</p>
+    <p><b>Al tercer aviso el intento queda anulado con nota cero.</b> Cierra las demás
+    aplicaciones y desactiva las notificaciones antes de continuar.</p>
+    <p style="font-size:13.5px;color:#a89e8c">El cronómetro no se detuvo.</p>
+    <button class="btn-primario" onclick="cerrarAviso(true)">Entendido, continuar</button>`);
+}
+const vigVisibilidad = () => { if (document.hidden) salida('cambiaste de pestaña o minimizaste la ventana'); };
+const vigBlur = () => { setTimeout(() => { if (!document.hasFocus() && !Q?.cerrado && !Q?.enPausa)
+  salida('la ventana perdió el foco'); }, 700); };
 const vigFullscreen = () => {
-  if (Q && !Q.cerrado && !document.fullscreenElement && !document.webkitFullscreenElement){
+  if (Q && !Q.cerrado && !Q.enPausa && !document.fullscreenElement && !document.webkitFullscreenElement){
     Q.avisos++;
-    if (Q.avisos >= 3) { anular('saliste repetidamente del modo de pantalla completa'); return; }
-    mostrarAviso(`<h3>Volviste a salir de pantalla completa</h3>
-      <p>El quiz debe presentarse en pantalla completa. Este es el aviso <b>${Q.avisos} de 3</b>.
-      Al tercero el intento quedará anulado.</p>
-      <p><b>Salir a otra pestaña o a otra aplicación anula el intento de inmediato.</b></p>
+    if (Q.avisos >= 4) { anular('saliste repetidamente del modo de pantalla completa'); return; }
+    mostrarAviso(`<h3>Saliste de pantalla completa</h3>
+      <p>El quiz debe presentarse en pantalla completa. Este es el aviso <b>${Q.avisos} de 3</b>.</p>
       <button class="btn-primario" onclick="cerrarAviso(true)">Volver a pantalla completa y continuar</button>`);
   }
 };
@@ -4209,21 +4354,17 @@ function pintarQuiz(){
         ${p.ayuda ? `<div class="nota" style="font-size:14px"><b>Recuerda:</b> ${p.ayuda}</div>` : ''}
         ${p.sust ? `
         <div class="sust">
-          <label class="f">Sustentación escrita — describe el procedimiento, las fórmulas y los valores intermedios</label>
-          <textarea id="tx${i}" placeholder="Ejemplo: error estándar = σ/√n = ... ; z = (x − μ)/σ_x̄ = ... ; en la tabla Φ(z) = ... ; por tanto ..."></textarea>
-          <label class="f" style="margin-top:12px">Foto del desarrollo a mano (obligatoria, hasta 3 imágenes)</label>
-          <div class="dropzona" onclick="document.getElementById('ev${i}').click()">
-            Toca aquí para tomar la foto o adjuntar la imagen de tu hoja
-          </div>
-          <input type="file" id="ev${i}" accept="image/*" capture="environment" multiple class="oculto">
-          <div class="evlista" id="evl${i}"></div>
+          <label class="f">Sustentación — escribe el procedimiento completo, con fórmulas y valores intermedios</label>
+          ${barraMat(i)}
+          <textarea id="tx${i}" placeholder="Escribe como lo harías en el cuaderno. Ejemplo: el error estándar es σ/√n = 4.86/√100 = 0.486 min, entonces z = (12.9 − 12.39)/0.486 = 1.05"></textarea>
+          <div class="previa" id="pv${i}"><b>Así se verá tu respuesta</b><div class="pvc">Escribe arriba y aquí aparecerá tu procedimiento con la matemática bien compuesta.</div></div>
         </div>` : `<div class="nota" style="font-size:14px">Pregunta conceptual: no requiere sustentación escrita.</div>`}
       </div>`).join('')}
     <div style="display:flex;gap:12px;flex-wrap:wrap">
       <button class="btn-primario" id="btnFin">Finalizar y calificar</button>
     </div>
-    <p style="font-size:13.5px;color:var(--gris);margin-top:14px">Al finalizar se descargará tu archivo de
-    evidencia. Debes subirlo al aula virtual para que la nota sea registrada.</p>
+    <p class="pie">Al finalizar se descargará tu archivo de evidencia con todo tu desarrollo.
+    Debes subirlo al aula virtual para que la nota sea registrada.</p>
   </div>`;
 
   Q.preguntas.forEach((p,i) => {
@@ -4233,39 +4374,68 @@ function pintarQuiz(){
       l.classList.add('sel');
     }));
     if (p.sust){
-      document.getElementById('tx'+i).addEventListener('input', e => Q.sust[i] = e.target.value);
-      document.getElementById('ev'+i).addEventListener('change', e => cargarEvidencias(i, e.target.files));
+      const ta = document.getElementById('tx'+i);
+      ta.addEventListener('input', e => { Q.sust[i] = e.target.value; previa(i); });
+      document.querySelectorAll(`.barramat[data-p="${i}"] button`).forEach(b =>
+        b.addEventListener('click', () => insertarMat(i, b.dataset.ins)));
     }
   });
   document.getElementById('btnFin').addEventListener('click', () => finalizarQuiz(false));
   tex(document.getElementById('quizInner'));
 }
 
-function cargarEvidencias(i, files){
-  const restantes = 3 - Q.evid[i].length;
-  Array.from(files).slice(0, restantes).forEach(file => {
-    const fr = new FileReader();
-    fr.onload = ev => {
-      const img = new Image();
-      img.onload = () => {
-        const max = 1100, esc = Math.min(1, max / Math.max(img.width, img.height));
-        const c = document.createElement('canvas');
-        c.width = Math.round(img.width * esc); c.height = Math.round(img.height * esc);
-        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-        Q.evid[i].push({ nombre: file.name, data: c.toDataURL('image/jpeg', 0.72) });
-        pintarEvidencias(i);
-      };
-      img.src = ev.target.result;
-    };
-    fr.readAsDataURL(file);
-  });
+/* ---------- editor de ecuaciones para la sustentación ---------- */
+/* Botones que insertan símbolos corrientes. El estudiante nunca escribe código. */
+const BOTONES_MAT = [
+  ['x̄','x̄','media muestral'], ['ȳ','ȳ','media de y'], ['p̂','p̂','proporción muestral'],
+  ['s²','s²','varianza muestral'], ['σ','σ','sigma'], ['σ²','σ²','varianza poblacional'],
+  ['μ','μ','mu'], ['λ','λ','lambda'], ['α','α','alfa'], ['β','β','beta'], ['ν','ν','nu'],
+  ['χ²','χ²','ji cuadrado'], ['Σ','Σ','sumatoria'], ['√','√','raíz cuadrada'],
+  ['≤','≤','menor o igual'], ['≥','≥','mayor o igual'], ['≠','≠','distinto'],
+  ['±','±','más menos'], ['×','×','por'], ['·','·','por'], ['≈','≈','aproximadamente'],
+  ['−','−','menos'], ['₀','₀','subíndice cero'], ['₁','₁','subíndice uno'], ['₂','₂','subíndice dos'],
+  ['²','²','al cuadrado'], ['³','³','al cubo'],
+  ['Fracción','(◻a◻)/(b)','divide una expresión entre otra'],
+  ['Raíz de','√(◻a◻)','raíz de una expresión']
+];
+function barraMat(i){
+  return `<div class="barramat" data-p="${i}">
+    <span class="et">Símbolos:</span>
+    ${BOTONES_MAT.map(([r, t, d]) => `<button type="button" data-ins="${t.replace(/"/g,'&quot;')}" title="${d}">${r}</button>`).join('')}
+  </div>`;
 }
-function pintarEvidencias(i){
-  document.getElementById('evl'+i).innerHTML = Q.evid[i].map((e,j) =>
-    `<div class="evitem"><img src="${e.data}" alt="evidencia"><div>${e.nombre.slice(0,18)}</div>
-     <button onclick="quitarEvidencia(${i},${j})">Quitar</button></div>`).join('');
+function insertarMat(i, texto){
+  const ta = document.getElementById('tx'+i);
+  const a = ta.selectionStart, b = ta.selectionEnd;
+  // ◻texto◻ marca lo que queda seleccionado para que el estudiante lo reemplace
+  const m = /◻(.*?)◻/.exec(texto);
+  const limpio = texto.replace(/◻/g, '');
+  ta.value = ta.value.slice(0, a) + limpio + ta.value.slice(b);
+  ta.focus();
+  if (m){
+    const ini = a + m.index;
+    ta.setSelectionRange(ini, ini + m[1].length);
+  } else {
+    const fin = a + limpio.length;
+    ta.setSelectionRange(fin, fin);
+  }
+  Q.sust[i] = ta.value;
+  previa(i);
 }
-window.quitarEvidencia = (i,j) => { Q.evid[i].splice(j,1); pintarEvidencias(i); };
+let tPrevia = null;
+function previa(i){
+  clearTimeout(tPrevia);
+  tPrevia = setTimeout(() => {
+    const c = document.querySelector('#pv'+i+' .pvc');
+    if (!c) return;
+    const t = (Q.sust[i] || '').trim();
+    if (!t){ c.textContent = 'Escribe arriba para ver aquí cómo queda tu sustentación.'; return; }
+    c.innerHTML = texAuto(t);
+    tex(c);
+  }, 450);
+}
+
+
 
 /* ---------------------------- calificación -------------------------- */
 function finalizarQuiz(porTiempo){
@@ -4273,12 +4443,11 @@ function finalizarQuiz(porTiempo){
   const faltan = [];
   Q.preguntas.forEach((p,i) => {
     if (Q.respuestas[i] === null) faltan.push('marcar la opción de la pregunta ' + (i+1));
-    if (p.sust && Q.sust[i].trim().length < 25) faltan.push('escribir la sustentación de la pregunta ' + (i+1));
-    if (p.sust && Q.evid[i].length === 0) faltan.push('adjuntar la foto del procedimiento de la pregunta ' + (i+1));
+    if (p.sust && Q.sust[i].trim().length < 40) faltan.push('escribir la sustentación de la pregunta ' + (i+1));
   });
   if (!porTiempo && faltan.length){
     if (!confirm('Te falta:\n\n· ' + faltan.join('\n· ') +
-      '\n\nLas preguntas de cálculo SIN sustentación NO suman puntaje aunque la opción sea correcta.\n\n¿Finalizar de todos modos?')) return;
+      '\n\nLas preguntas de cálculo SIN sustentación NO suman puntaje aunque la opción marcada sea correcta.\n\n¿Finalizar de todos modos?')) return;
   }
   Q.cerrado = true;
   clearInterval(Q.timer);
@@ -4286,10 +4455,10 @@ function finalizarQuiz(porTiempo){
 
   const det = Q.preguntas.map((p,i) => {
     const acerto = Q.respuestas[i] === p.ok;
-    const sustOk = !p.sust || (Q.sust[i].trim().length >= 25 && Q.evid[i].length > 0);
+    const sustOk = !p.sust || Q.sust[i].trim().length >= 40;
     return { acerto, sustOk, puntos: (acerto && sustOk) ? 1 : 0,
              marcada: Q.respuestas[i] === null ? '(sin responder)' : p.ops[Q.respuestas[i]],
-             correcta: p.ops[p.ok], enunciado: p.q, sust: Q.sust[i], evid: Q.evid[i], requiere: !!p.sust };
+             correcta: p.ops[p.ok], enunciado: p.q, sust: Q.sust[i], requiere: !!p.sust };
   });
   const puntos = det.reduce((a,b) => a + b.puntos, 0);
   const nota = +(puntos / 3 * 5).toFixed(2);
@@ -4345,9 +4514,7 @@ function finalizarQuiz(porTiempo){
         opcionMarcada: d.marcada.replace(/<[^>]+>/g, ''),
         opcionCorrecta: d.correcta.replace(/<[^>]+>/g, ''),
         acerto: d.acerto, requiereSustentacion: d.requiere, sustentacionValida: d.sustOk,
-        puntos: d.puntos, sustentacion: d.sust || '',
-        evidencias: CONFIG.enviarFotos ? d.evid.map(e => ({ nombre: e.nombre, imagen: e.data }))
-                                       : d.evid.map(e => ({ nombre: e.nombre }))
+        puntos: d.puntos, sustentacion: d.sust || ''
       }))
     })).then(pintarEnvio);
   }
@@ -4357,6 +4524,8 @@ function descargarEvidencia(det, nota, puntos, usado, mejor, est){
   const codigo = hash32(Q.cedula + '|' + Q.k + '|' + Q.intento + '|' + puntos + '|' + Q.inicio).toString(16).toUpperCase().padStart(8,'0');
   const html = `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8">
 <title>Evidencia Quiz ${Q.k} — ${Q.nombre}</title>
+<script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]},chtml:{scale:1.02}};<\/script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.js"><\/script>
 <style>body{font:15px/1.6 "Segoe UI",Arial,sans-serif;max-width:840px;margin:24px auto;padding:0 18px;color:#16202b}
 h1{font-size:21px;color:#0b3d6b;margin-bottom:4px}h2{font-size:17px;color:#0b3d6b;margin-top:26px}
 table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px}
@@ -4364,8 +4533,8 @@ th,td{border:1px solid #dde5ed;padding:7px 9px;text-align:left}th{background:#e8
 .p{border:1px solid #dde5ed;border-radius:8px;padding:14px 16px;margin:14px 0}
 .ok{border-left:4px solid #0f7a4d;background:#e7f5ee}.no{border-left:4px solid #a8321f;background:#fdecea}
 .cod{font-family:monospace;font-size:19px;letter-spacing:.14em;background:#0b3d6b;color:#fff;padding:9px 15px;border-radius:7px;display:inline-block}
-img{max-width:100%;border:1px solid #dde5ed;border-radius:7px;margin:8px 0}
-pre{white-space:pre-wrap;background:#f7fafd;border:1px solid #dde5ed;border-radius:7px;padding:11px 13px;font:14px/1.55 inherit}</style>
+.sus{white-space:pre-wrap;background:#f7fafd;border:1px solid #dde5ed;border-radius:7px;padding:13px 15px;
+  font:15px/1.7 inherit}</style>
 </head><body>
 <h1>Evidencia de quiz — Estadística y Probabilidad II</h1>
 <p>Ingeniería Industrial · Institución Universitaria Antonio José Camacho · Semestre 2026-2</p>
@@ -4388,14 +4557,13 @@ ${det.map((d,i) => `<div class="p ${d.puntos?'ok':'no'}">
 <p>${d.enunciado}</p>
 <p><b>Opción marcada:</b> ${d.marcada}</p>
 <p><b>Opción correcta:</b> ${d.correcta}</p>
-${d.requiere ? `<p><b>Sustentación escrita:</b></p><pre>${(d.sust||'(no presentada)').replace(/</g,'&lt;')}</pre>
-${d.evid.length ? d.evid.map(e=>`<img src="${e.data}" alt="procedimiento">`).join('') : '<p><i>No adjuntó foto del procedimiento.</i></p>'}`
+${d.requiere ? `<p><b>Sustentación:</b></p><div class="sus">${d.sust ? texAuto(d.sust) : '<i>(no presentada)</i>'}</div>`
 : '<p><i>Pregunta conceptual: no requería sustentación.</i></p>'}
 </div>`).join('')}
 <h2>Declaración</h2>
 <p>Este archivo fue generado automáticamente por la página del curso al finalizar el quiz. Las preguntas
 fueron construidas a partir del número de identificación del estudiante, por lo que son distintas para cada
-persona. Las preguntas de cálculo solo suman puntaje si incluyen sustentación escrita y foto del procedimiento.</p>
+persona. Las preguntas de cálculo solo suman puntaje si incluyen la sustentación del procedimiento.</p>
 </body></html>`;
   const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
   const a = document.createElement('a');
@@ -4458,3 +4626,4 @@ document.addEventListener('DOMContentLoaded', inicio);
 </script>
 </body>
 </html>
+
